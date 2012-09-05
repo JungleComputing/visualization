@@ -112,28 +112,32 @@ public class TouchHandler implements TouchEventHandler {
             int x = (int) (((points[0].tx + xOffset) * screenWidth) * xMultiplier);
             int y = (int) (((points[0].ty + yOffset) * screenHeight) * yMultiplier);
 
-            // System.out.println(x + " : " + y);
+            if (x < 0 || x > screenWidth || y < 0 || y > screenHeight) {
+                // DISCARD, NOT FOR MY SCREEN
+            } else {
+                // System.out.println(x + " : " + y);
 
-            if (points[0].state == 0) {
-                if (isTouchState(TouchState.NONE) || isTouchState(TouchState.SINGLE)) {
-                    setTouchState(TouchState.SINGLE);
+                if (points[0].state == 0) {
+                    if (isTouchState(TouchState.NONE) || isTouchState(TouchState.SINGLE)) {
+                        setTouchState(TouchState.SINGLE);
 
-                    eventStartTime = currentTime;
+                        eventStartTime = currentTime;
 
-                    robot.mouseMove(x, y);
-                    robot.mousePress(InputEvent.BUTTON1_MASK);
-                }
-            } else if (points[0].state == 1) {
-                if (isTouchState(TouchState.SINGLE)) {
-                    robot.mouseMove(x, y);
-                }
-            } else if (points[0].state == 2) {
-                if (isTouchState(TouchState.SINGLE)) {
-                    robot.mouseMove(x, y);
-                    robot.mouseRelease(InputEvent.BUTTON1_MASK);
-                    setTouchState(TouchState.NONE);
-                } else if (isTouchState(TouchState.RELEASE)) {
-                    setTouchState(TouchState.NONE);
+                        robot.mouseMove(x, y);
+                        robot.mousePress(InputEvent.BUTTON1_MASK);
+                    }
+                } else if (points[0].state == 1) {
+                    if (isTouchState(TouchState.SINGLE)) {
+                        robot.mouseMove(x, y);
+                    }
+                } else if (points[0].state == 2) {
+                    if (isTouchState(TouchState.SINGLE)) {
+                        robot.mouseMove(x, y);
+                        robot.mouseRelease(InputEvent.BUTTON1_MASK);
+                        setTouchState(TouchState.NONE);
+                    } else if (isTouchState(TouchState.RELEASE)) {
+                        setTouchState(TouchState.NONE);
+                    }
                 }
             }
         } else if (n == 2) {
@@ -147,44 +151,62 @@ public class TouchHandler implements TouchEventHandler {
             int x1 = (int) (((points[1].tx + xOffset) * screenWidth) * xMultiplier);
             int y1 = (int) (((points[1].ty + yOffset) * screenHeight) * yMultiplier);
 
-            int x = (x0 + x1) / 2;
-            int y = (y0 + y1) / 2;
+            if (x0 < 0 || x0 > screenWidth || y0 < 0 || y0 > screenHeight || x1 < 0 || x1 > screenWidth || y1 < 0
+                    || y1 > screenHeight) {
+                // DISCARD, NOT FOR MY SCREEN
+            } else {
+                int x = (x0 + x1) / 2;
+                int y = (y0 + y1) / 2;
 
-            if (points[0].state == 0 || points[1].state == 0) {
-                if (isTouchState(TouchState.NONE) || isTouchState(TouchState.SINGLE)) {
-                    setTouchState(TouchState.DOUBLE);
-                    initialResizeDist = VectorFMath.length((v0.sub(v1)));
-                    initialX = x;
-                    initialY = y;
-                }
-            } else if (points[1].state == 1 && points[0].state == 1) {
-                if (isTouchState(TouchState.DOUBLE)) {
-                    float amountShorterThanInitial = VectorFMath.length((v0.sub(v1))) - initialResizeDist;
+                if (points[0].state == 0 || points[1].state == 0) {
+                    if (isTouchState(TouchState.NONE) || isTouchState(TouchState.SINGLE)) {
+                        setTouchState(TouchState.DOUBLE);
+                        initialResizeDist = VectorFMath.length((v0.sub(v1)));
+                        initialX = x;
+                        initialY = y;
+                    }
+                } else if (points[1].state == 1 && points[0].state == 1) {
+                    if (isTouchState(TouchState.DOUBLE)) {
+                        float amountShorterThanInitial = VectorFMath.length((v0.sub(v1))) - initialResizeDist;
 
-                    int notches = (int) (amountShorterThanInitial * 250);
+                        int notches = (int) (amountShorterThanInitial * 250);
 
-                    robot.mouseWheel(-notches);
+                        robot.mouseWheel(-notches);
 
-                    initialResizeDist = VectorFMath.length((v0.sub(v1)));
-                }
-            } else if (points[0].state == 2 || points[1].state == 2) {
-                if (isTouchState(TouchState.DOUBLE) || isTouchState(TouchState.RELEASE)) {
-                    if (points[0].state == 2 && points[1].state == 2) {
-                        setTouchState(TouchState.NONE);
-                    } else {
-                        setTouchState(TouchState.RELEASE);
+                        initialResizeDist = VectorFMath.length((v0.sub(v1)));
+                    }
+                } else if (points[0].state == 2 || points[1].state == 2) {
+                    if (isTouchState(TouchState.DOUBLE) || isTouchState(TouchState.RELEASE)) {
+                        if (points[0].state == 2 && points[1].state == 2) {
+                            setTouchState(TouchState.NONE);
+                        } else {
+                            setTouchState(TouchState.RELEASE);
+                        }
                     }
                 }
             }
         } else if (n == 3) {
-            if (points[0].state == 0 || points[1].state == 0 || points[2].state == 0) {
-                if (isTouchState(TouchState.NONE) || isTouchState(TouchState.SINGLE) || isTouchState(TouchState.DOUBLE)) {
-                    setTouchState(TouchState.TRIPLE);
-                    robot.mousePress(InputEvent.BUTTON3_MASK);
-                    robot.mouseRelease(InputEvent.BUTTON3_MASK);
-                }
+            int x0 = (int) (((points[0].tx + xOffset) * screenWidth) * xMultiplier);
+            int y0 = (int) (((points[0].ty + yOffset) * screenHeight) * yMultiplier);
+            int x1 = (int) (((points[1].tx + xOffset) * screenWidth) * xMultiplier);
+            int y1 = (int) (((points[1].ty + yOffset) * screenHeight) * yMultiplier);
+            int x2 = (int) (((points[2].tx + xOffset) * screenWidth) * xMultiplier);
+            int y2 = (int) (((points[2].ty + yOffset) * screenHeight) * yMultiplier);
+
+            if (x0 < 0 || x0 > screenWidth || y0 < 0 || y0 > screenHeight || x1 < 0 || x1 > screenWidth || y1 < 0
+                    || y1 > screenHeight || x2 < 0 || x2 > screenWidth || y2 < 0 || y2 > screenHeight) {
+                // DISCARD, NOT FOR MY SCREEN
             } else {
-                setTouchState(TouchState.RELEASE);
+                if (points[0].state == 0 || points[1].state == 0 || points[2].state == 0) {
+                    if (isTouchState(TouchState.NONE) || isTouchState(TouchState.SINGLE)
+                            || isTouchState(TouchState.DOUBLE)) {
+                        setTouchState(TouchState.TRIPLE);
+                        robot.mousePress(InputEvent.BUTTON3_MASK);
+                        robot.mouseRelease(InputEvent.BUTTON3_MASK);
+                    }
+                } else {
+                    setTouchState(TouchState.RELEASE);
+                }
             }
         }
     }

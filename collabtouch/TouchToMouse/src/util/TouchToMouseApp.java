@@ -27,14 +27,23 @@ public class TouchToMouseApp {
     static Robot robot;
     static JFrame frame;
 
-    boolean connected = false;
-
     public static void main(String[] args) {
-
-        frame = new JFrame("Touch to Mouse");
-        frame.setPreferredSize(new Dimension(625, 125));
+        try {
+            robot = new Robot();
+        } catch (AWTException e1) {
+            e1.printStackTrace();
+        }
 
         try {
+            touchSocket = new Socket("145.100.39.13", 12345);
+            touchHandler = new TouchHandler(robot, ScreenLocation.MIDDLE_4);
+            touchConnection = new ConnectionHandler(touchHandler, touchSocket);
+
+            new Thread(touchConnection).start();
+
+            frame = new JFrame("Touch to Mouse");
+            frame.setPreferredSize(new Dimension(625, 125));
+
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -181,25 +190,10 @@ public class TouchToMouseApp {
 
             frame.setVisible(true);
 
-            touchSocket = new Socket("145.100.39.13", 12345);
-            touchHandler = new TouchHandler(robot, ScreenLocation.MIDDLE_4);
-            touchConnection = new ConnectionHandler(touchHandler, touchSocket);
-
-            try {
-                robot = new Robot();
-            } catch (AWTException e1) {
-                JOptionPane.showMessageDialog(frame, "Error: Access to OS events is blocked.");
-                System.exit(1);
-            }
-
-            new Thread(touchConnection).start();
-
         } catch (UnknownHostException e) {
-            JOptionPane.showMessageDialog(frame, "Error: Touch event machine IP unknown.");
-            System.exit(1);
+            JOptionPane.showMessageDialog(frame, "Unknown Host.");
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(frame, "Error: Connection to touch event machine unavailable.");
-            System.exit(1);
+            JOptionPane.showMessageDialog(frame, "IOException " + e.getMessage());
         }
     }
 }
