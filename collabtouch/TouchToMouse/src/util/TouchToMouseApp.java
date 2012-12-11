@@ -35,6 +35,7 @@ public class TouchToMouseApp {
             touchSocket = new Socket(address, port);
             touchHandler = new TouchHandler(robot, ScreenLocation.MIDDLE_4);
             touchConnection = new ConnectionHandler(touchHandler, touchSocket);
+            new Thread(touchConnection).start();
 
             showButtons();
         } catch (UnknownHostException e) {
