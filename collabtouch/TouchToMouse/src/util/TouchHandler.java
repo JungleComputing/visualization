@@ -18,32 +18,36 @@ public class TouchHandler implements TouchEventHandler {
         NONE, SINGLE, RIGHT, DOUBLE, TRIPLE, OTHER, RELEASE
     }
 
-    int screenWidth;
-    int screenHeight;
+    int                screenWidth;
+    int                screenHeight;
 
-    protected float initialResizeDist;
-    protected int initialX, initialY;
+    protected float    initialResizeDist;
+    protected int      initialX, initialY;
 
     private TouchState currentTouchState = TouchState.NONE;
 
-    long eventStartTime;
+    long               eventStartTime;
 
-    float xOffset = 0f;
-    float yOffset = 0f;
-    float xMultiplier = 1f;
-    float yMultiplier = 1f;
+    float              xOffset           = 0f;
+    float              yOffset           = 0f;
+    float              xMultiplier       = 1f;
+    float              yMultiplier       = 1f;
 
     public TouchHandler(Robot robot, ScreenLocation sl) {
         this.robot = robot;
         setScreen(sl);
 
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsEnvironment ge = GraphicsEnvironment
+                .getLocalGraphicsEnvironment();
         GraphicsDevice[] gs = ge.getScreenDevices();
 
         for (int i = 0; i < gs.length; i++) {
             DisplayMode dm = gs[i].getDisplayMode();
             screenWidth = dm.getWidth();
             screenHeight = dm.getHeight();
+
+            System.out.println("W: " + screenWidth);
+            System.out.println("H: " + screenHeight);
         }
     }
 
@@ -69,7 +73,8 @@ public class TouchHandler implements TouchEventHandler {
             int y = (int) (((t0.ty + yOffset) * screenHeight) * yMultiplier);
 
             if (t0.state == 0) {
-                if (isTouchState(TouchState.NONE) || isTouchState(TouchState.SINGLE)) {
+                if (isTouchState(TouchState.NONE)
+                        || isTouchState(TouchState.SINGLE)) {
                     setTouchState(TouchState.SINGLE);
 
                     eventStartTime = currentTime;
@@ -108,7 +113,8 @@ public class TouchHandler implements TouchEventHandler {
             int y = (y0 + y1) / 2;
 
             if (t0.state == 0 || t1.state == 0) {
-                if (isTouchState(TouchState.NONE) || isTouchState(TouchState.SINGLE)) {
+                if (isTouchState(TouchState.NONE)
+                        || isTouchState(TouchState.SINGLE)) {
                     setTouchState(TouchState.DOUBLE);
                     initialResizeDist = VectorFMath.length((v0.sub(v1)));
                     initialX = x;
@@ -116,7 +122,8 @@ public class TouchHandler implements TouchEventHandler {
                 }
             } else if (t1.state == 1 && t0.state == 1) {
                 if (isTouchState(TouchState.DOUBLE)) {
-                    float amountShorterThanInitial = VectorFMath.length((v0.sub(v1))) - initialResizeDist;
+                    float amountShorterThanInitial = VectorFMath.length((v0
+                            .sub(v1))) - initialResizeDist;
 
                     int notches = (int) (amountShorterThanInitial * 250);
 
@@ -125,7 +132,8 @@ public class TouchHandler implements TouchEventHandler {
                     initialResizeDist = VectorFMath.length((v0.sub(v1)));
                 }
             } else if (t0.state == 2 || t1.state == 2) {
-                if (isTouchState(TouchState.DOUBLE) || isTouchState(TouchState.RELEASE)) {
+                if (isTouchState(TouchState.DOUBLE)
+                        || isTouchState(TouchState.RELEASE)) {
                     if (t0.state == 2 && t1.state == 2) {
                         setTouchState(TouchState.NONE);
                     } else {
@@ -139,7 +147,9 @@ public class TouchHandler implements TouchEventHandler {
             TouchPoint t2 = newPoints.get(2);
 
             if (t0.state == 0 || t1.state == 0 || t2.state == 0) {
-                if (isTouchState(TouchState.NONE) || isTouchState(TouchState.SINGLE) || isTouchState(TouchState.DOUBLE)) {
+                if (isTouchState(TouchState.NONE)
+                        || isTouchState(TouchState.SINGLE)
+                        || isTouchState(TouchState.DOUBLE)) {
                     setTouchState(TouchState.TRIPLE);
                     robot.mousePress(InputEvent.BUTTON3_MASK);
                     robot.mouseRelease(InputEvent.BUTTON3_MASK);
