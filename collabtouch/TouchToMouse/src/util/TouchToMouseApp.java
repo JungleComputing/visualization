@@ -21,6 +21,9 @@ import javax.swing.JTextField;
 import util.TouchHandler.ScreenLocation;
 
 public class TouchToMouseApp {
+    private static final int FS_RESOLUTION_WIDTH = 1280 * 2;// 3840;
+    private static final int FS_RESOLUTION_HEIGHT = 720 * 2;// 2160;
+
     private static Socket touchSocket;
     private static ConnectionHandler touchConnection;
     private static TouchHandler touchHandler;
@@ -240,8 +243,8 @@ public class TouchToMouseApp {
         fr_left_4_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                touchHandler.screenHeight = 2160;
-                touchHandler.screenWidth = 3840;
+                touchHandler.screenHeight = FS_RESOLUTION_HEIGHT;
+                touchHandler.screenWidth = FS_RESOLUTION_WIDTH;
                 touchHandler.setScreen(ScreenLocation.LEFT_4);
             }
         });
@@ -251,8 +254,8 @@ public class TouchToMouseApp {
         fr_middle_4_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                touchHandler.screenHeight = 2160;
-                touchHandler.screenWidth = 3840;
+                touchHandler.screenHeight = FS_RESOLUTION_HEIGHT;
+                touchHandler.screenWidth = FS_RESOLUTION_WIDTH;
                 touchHandler.setScreen(ScreenLocation.MIDDLE_4);
             }
         });
@@ -262,8 +265,8 @@ public class TouchToMouseApp {
         fr_right_4_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                touchHandler.screenHeight = 2160;
-                touchHandler.screenWidth = 3840;
+                touchHandler.screenHeight = FS_RESOLUTION_HEIGHT;
+                touchHandler.screenWidth = FS_RESOLUTION_WIDTH;
                 touchHandler.setScreen(ScreenLocation.RIGHT_4);
             }
         });
