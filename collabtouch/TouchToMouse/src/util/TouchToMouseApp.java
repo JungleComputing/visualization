@@ -281,20 +281,17 @@ public class TouchToMouseApp {
     }
 
     public void setListeningToEvents(boolean listenToEvents) {
-        if (listenToEvents) {
-            System.out.println("starting touch!");
-        } else {
-            System.out.println("stopping touch!");
-        }
-
         if (touchHandler != null) {
             if (listeningToEvents) {
                 touchHandler.setListen(true);
             } else {
                 touchHandler.setListen(false);
             }
-
             this.listeningToEvents = listenToEvents;
         }
+    }
+
+    public boolean isListeningToEvents() {
+        return listeningToEvents;
     }
 }

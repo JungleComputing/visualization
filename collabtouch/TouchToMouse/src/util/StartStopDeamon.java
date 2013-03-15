@@ -4,6 +4,7 @@
 package util;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -45,11 +46,20 @@ public class StartStopDeamon implements Runnable {
         ServerSocket ssock;
         try {
             ssock = new ServerSocket(myPort);
-            ssock.setSoTimeout(10000);
+            // ssock.setSoTimeout(10000);
 
             while (running) {
                 try {
                     Socket server = ssock.accept();
+
+                    DataOutputStream os = new DataOutputStream(server.getOutputStream());
+                    if (os != null) {
+                        if (app.isListeningToEvents()) {
+                            os.writeUTF("touch events currently on\n");
+                        } else {
+                            os.writeUTF("touch events currently off\n");
+                        }
+                    }
 
                     DataInputStream in = new DataInputStream(server.getInputStream());
                     String s = in.readUTF();

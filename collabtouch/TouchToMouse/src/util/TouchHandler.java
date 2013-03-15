@@ -233,6 +233,12 @@ public class TouchHandler implements TouchEventHandler {
      * @param listening
      */
     public void setListen(boolean listening) {
+        if (listening) {
+            System.out.println("starting touch!");
+        } else {
+            System.out.println("stopping touch!");
+        }
+
         this.listening = listening;
     }
 }
