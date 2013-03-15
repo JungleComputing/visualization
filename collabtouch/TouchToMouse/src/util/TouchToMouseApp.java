@@ -21,14 +21,46 @@ import javax.swing.JTextField;
 import util.TouchHandler.ScreenLocation;
 
 public class TouchToMouseApp {
-    private static Socket            touchSocket;
+    private static Socket touchSocket;
     private static ConnectionHandler touchConnection;
-    private static TouchHandler      touchHandler;
-    static Robot                     robot;
-    static JFrame                    frame;
+    private static TouchHandler touchHandler;
+    static Robot robot;
+    static JFrame frame;
 
-    final static JPanel              initialPanel = new JPanel();
-    final static JPanel              buttonPanel  = new JPanel();
+    final static JPanel initialPanel = new JPanel();
+    final static JPanel buttonPanel = new JPanel();
+
+    private boolean listeningToEvents;
+
+    /**
+     * Basic constructor for TouchToMouseApp
+     */
+    public TouchToMouseApp() {
+        frame = new JFrame("CollabTouch");
+        frame.setPreferredSize(new Dimension(625, 125));
+
+        createInitialPanel();
+        createButtonPanel();
+
+        frame.add(initialPanel);
+        // frame.add(buttonPanel);
+
+        // Display the window.
+        frame.pack();
+
+        // center on screen
+        frame.setLocationRelativeTo(null);
+
+        frame.setVisible(true);
+
+        new Thread(new StartStopDeamon(this, 12346)).start();
+
+        try {
+            robot = new Robot();
+        } catch (AWTException e1) {
+            e1.printStackTrace();
+        }
+    }
 
     static void connect(String address, int port) {
         try {
@@ -41,8 +73,7 @@ public class TouchToMouseApp {
         } catch (UnknownHostException e) {
             JOptionPane.showMessageDialog(frame, "Unknown host: " + address);
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(frame,
-                    "IO Exception: " + e.getMessage());
+            JOptionPane.showMessageDialog(frame, "IO Exception: " + e.getMessage());
         }
     }
 
@@ -59,7 +90,7 @@ public class TouchToMouseApp {
     static void createInitialPanel() {
         initialPanel.setLayout(new BorderLayout());
 
-        final JTextField adressField = new JTextField("145.100.39.11");
+        final JTextField adressField = new JTextField("127.0.0.1"); // "145.100.39.11");
         final JTextField portField = new JTextField("12345");
 
         JPanel top = new JPanel(new GridLayout());
@@ -77,8 +108,7 @@ public class TouchToMouseApp {
         connect_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                connect(adressField.getText(),
-                        Integer.parseInt(portField.getText()));
+                connect(adressField.getText(), Integer.parseInt(portField.getText()));
             }
         });
         bottom.add(connect_button);
@@ -244,27 +274,24 @@ public class TouchToMouseApp {
     }
 
     public static void main(String[] args) {
-        frame = new JFrame("CollabTouch");
-        frame.setPreferredSize(new Dimension(625, 125));
+        new TouchToMouseApp();
+    }
 
-        createInitialPanel();
-        createButtonPanel();
+    public void setListeningToEvents(boolean listenToEvents) {
+        if (listenToEvents) {
+            System.out.println("starting touch!");
+        } else {
+            System.out.println("stopping touch!");
+        }
 
-        frame.add(initialPanel);
-        // frame.add(buttonPanel);
+        if (touchHandler != null) {
+            if (listeningToEvents) {
+                touchHandler.setListen(true);
+            } else {
+                touchHandler.setListen(false);
+            }
 
-        // Display the window.
-        frame.pack();
-
-        // center on screen
-        frame.setLocationRelativeTo(null);
-
-        frame.setVisible(true);
-
-        try {
-            robot = new Robot();
-        } catch (AWTException e1) {
-            e1.printStackTrace();
+            this.listeningToEvents = listenToEvents;
         }
     }
 }
