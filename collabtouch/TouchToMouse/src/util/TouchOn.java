@@ -3,6 +3,7 @@
  */
 package util;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -33,13 +34,16 @@ public class TouchOn {
                 System.out.println("useage: java -jar TouchOn.jar server_ip_address server_port");
                 System.exit(0);
             }
-            Socket s = new Socket(args[0], Integer.parseInt(args[1]));
+            Socket sock = new Socket(args[0], Integer.parseInt(args[1]));
+            DataInputStream in = new DataInputStream(sock.getInputStream());
 
-            DataOutputStream os = new DataOutputStream(s.getOutputStream());
+            String s = in.readUTF();
+
+            DataOutputStream os = new DataOutputStream(sock.getOutputStream());
             if (os != null) {
                 os.writeUTF("turn on touch events\n");
             }
-            s.close();
+            sock.close();
 
         } catch (UnknownHostException e) {
             System.err.println("Unknown host: " + args[0]);

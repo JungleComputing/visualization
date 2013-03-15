@@ -7,6 +7,8 @@ import java.awt.GridLayout;
 import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -54,9 +56,17 @@ public class TouchToMouseApp {
         // center on screen
         frame.setLocationRelativeTo(null);
 
-        frame.setVisible(true);
+        final StartStopDeamon deamon = new StartStopDeamon(this, 12346);
+        new Thread(deamon).start();
 
-        new Thread(new StartStopDeamon(this, 12346)).start();
+        frame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                deamon.setRunning(false);
+                System.exit(0);
+            }
+        });
+
+        frame.setVisible(true);
 
         try {
             robot = new Robot();
