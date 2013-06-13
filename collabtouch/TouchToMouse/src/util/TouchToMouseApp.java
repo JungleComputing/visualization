@@ -23,8 +23,8 @@ import javax.swing.JTextField;
 import util.TouchHandler.ScreenLocation;
 
 public class TouchToMouseApp {
-    private static final int FS_RESOLUTION_WIDTH = 1280 * 2;// 3840;
-    private static final int FS_RESOLUTION_HEIGHT = 720 * 2;// 2160;
+    private static final int FS_RESOLUTION_WIDTH = 3840;
+    private static final int FS_RESOLUTION_HEIGHT = 2160;
 
     private static Socket touchSocket;
     private static ConnectionHandler touchConnection;
@@ -42,12 +42,12 @@ public class TouchToMouseApp {
      */
     public TouchToMouseApp() {
         frame = new JFrame("CollabTouch");
-        frame.setPreferredSize(new Dimension(625, 125));
+        frame.setPreferredSize(new Dimension(625, 150));
 
         createInitialPanel();
         createButtonPanel();
 
-        frame.add(initialPanel);
+        frame.getContentPane().add(initialPanel);
         // frame.add(buttonPanel);
 
         // Display the window.
@@ -60,6 +60,7 @@ public class TouchToMouseApp {
         new Thread(deamon).start();
 
         frame.addWindowListener(new WindowAdapter() {
+            @Override
             public void windowClosing(WindowEvent e) {
                 deamon.setRunning(false);
                 System.exit(0);
@@ -86,8 +87,10 @@ public class TouchToMouseApp {
         } catch (UnknownHostException e) {
             JOptionPane.showMessageDialog(frame, "Unknown host: " + address);
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(frame, "IO Exception: " + e.getMessage());
+            JOptionPane.showMessageDialog(frame,
+                    "IO Exception: " + e.getMessage());
         }
+        // showButtons();
     }
 
     static void showButtons() {
@@ -95,7 +98,7 @@ public class TouchToMouseApp {
 
         frame.remove(initialPanel);
 
-        frame.add(buttonPanel);
+        frame.getContentPane().add(buttonPanel);
 
         frame.setVisible(true);
     }
@@ -103,7 +106,7 @@ public class TouchToMouseApp {
     static void createInitialPanel() {
         initialPanel.setLayout(new BorderLayout());
 
-        final JTextField adressField = new JTextField("127.0.0.1"); // "145.100.39.11");
+        final JTextField adressField = new JTextField("145.100.39.11");
         final JTextField portField = new JTextField("12345");
 
         JPanel top = new JPanel(new GridLayout());
@@ -121,7 +124,8 @@ public class TouchToMouseApp {
         connect_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                connect(adressField.getText(), Integer.parseInt(portField.getText()));
+                connect(adressField.getText(),
+                        Integer.parseInt(portField.getText()));
             }
         });
         bottom.add(connect_button);
@@ -135,7 +139,7 @@ public class TouchToMouseApp {
         JPanel topButtonPanel = new JPanel();
         topButtonPanel.setLayout(new GridLayout());
 
-        JButton left_4_button = new JButton("Left 4");
+        JButton left_4_button = new JButton("LEFT 1920x1080");
         left_4_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -143,7 +147,7 @@ public class TouchToMouseApp {
             }
         });
 
-        JButton middle_4_button = new JButton("Middle 4");
+        JButton middle_4_button = new JButton("MID 1920x1080");
         middle_4_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -151,7 +155,7 @@ public class TouchToMouseApp {
             }
         });
 
-        JButton right_4_button = new JButton("Right 4");
+        JButton right_4_button = new JButton("RIGHT 1920x1080");
         right_4_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -167,9 +171,6 @@ public class TouchToMouseApp {
         buttonPanel.add(topButtonPanel, BorderLayout.NORTH);
 
         JPanel middleButtonPanel = new JPanel();
-        GridLayout bottomLayout = new GridLayout();
-        bottomLayout.setRows(2);
-        middleButtonPanel.setLayout(bottomLayout);
 
         JButton top_left_button = new JButton("Top Left");
         top_left_button.addActionListener(new ActionListener() {
@@ -234,22 +235,35 @@ public class TouchToMouseApp {
                 touchHandler.setScreen(ScreenLocation.BR);
             }
         });
+        middleButtonPanel.setLayout(new GridLayout(2, 4));
 
-        middleButtonPanel.add(top_left_button);
-        middleButtonPanel.add(top_middle_left_button);
-        middleButtonPanel.add(top_middle_right_button);
-        middleButtonPanel.add(top_right_button);
-        middleButtonPanel.add(bottom_left_button);
-        middleButtonPanel.add(bottom_middle_left_button);
-        middleButtonPanel.add(bottom_middle_right_button);
-        middleButtonPanel.add(bottom_right_button);
+        middleButtonPanel.add(top_left_button, 0);
+        middleButtonPanel.add(top_middle_left_button, 1);
+        middleButtonPanel.add(top_middle_right_button, 2);
+        middleButtonPanel.add(top_right_button, 3);
+        middleButtonPanel.add(bottom_left_button, 4);
+        middleButtonPanel.add(bottom_middle_left_button, 5);
+        middleButtonPanel.add(bottom_middle_right_button, 6);
+        middleButtonPanel.add(bottom_right_button, 7);
 
         buttonPanel.add(middleButtonPanel, BorderLayout.CENTER);
 
-        JPanel bottomButtonPanel = new JPanel();
-        bottomButtonPanel.setLayout(new GridLayout());
+        JPanel bottomButtonPanel = new JPanel(new GridLayout(2, 1));
+        JPanel bottomButtonPanel1 = new JPanel(new GridLayout(1, 1));
+        JPanel bottomButtonPanel2 = new JPanel(new GridLayout(1, 3));
 
-        JButton fr_left_4_button = new JButton("FR LEFT");
+        JButton fr_entire_screen = new JButton("7680x2160");
+        fr_entire_screen.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                touchHandler.screenHeight = FS_RESOLUTION_HEIGHT;
+                touchHandler.screenWidth = FS_RESOLUTION_WIDTH * 2;
+                touchHandler.setScreen(ScreenLocation.ALL);
+            }
+        });
+        bottomButtonPanel1.add(fr_entire_screen);
+
+        JButton fr_left_4_button = new JButton("LEFT 3840x2160");
         fr_left_4_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -258,9 +272,9 @@ public class TouchToMouseApp {
                 touchHandler.setScreen(ScreenLocation.LEFT_4);
             }
         });
-        bottomButtonPanel.add(fr_left_4_button);
+        bottomButtonPanel2.add(fr_left_4_button);
 
-        JButton fr_middle_4_button = new JButton("FR MIDDLE");
+        JButton fr_middle_4_button = new JButton("MID 3840x2160");
         fr_middle_4_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -269,9 +283,9 @@ public class TouchToMouseApp {
                 touchHandler.setScreen(ScreenLocation.MIDDLE_4);
             }
         });
-        bottomButtonPanel.add(fr_middle_4_button);
+        bottomButtonPanel2.add(fr_middle_4_button);
 
-        JButton fr_right_4_button = new JButton("FR RIGHT");
+        JButton fr_right_4_button = new JButton("RIGHT 3840x2160");
         fr_right_4_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -280,7 +294,10 @@ public class TouchToMouseApp {
                 touchHandler.setScreen(ScreenLocation.RIGHT_4);
             }
         });
-        bottomButtonPanel.add(fr_right_4_button);
+        bottomButtonPanel2.add(fr_right_4_button);
+
+        bottomButtonPanel.add(bottomButtonPanel1, 0);
+        bottomButtonPanel.add(bottomButtonPanel2, 1);
 
         buttonPanel.add(bottomButtonPanel, BorderLayout.SOUTH);
         buttonPanel.setVisible(true);
@@ -292,7 +309,7 @@ public class TouchToMouseApp {
 
     public void setListeningToEvents(boolean listenToEvents) {
         if (touchHandler != null) {
-            if (listeningToEvents) {
+            if (listenToEvents) {
                 touchHandler.setListen(true);
             } else {
                 touchHandler.setListen(false);

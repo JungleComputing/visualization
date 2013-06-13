@@ -11,7 +11,7 @@ public class TouchHandler implements TouchEventHandler {
     Robot robot;
 
     public enum ScreenLocation {
-        LEFT_4, MIDDLE_4, RIGHT_4, TL, TML, TMR, TR, BL, BML, BMR, BR
+        LEFT_4, MIDDLE_4, RIGHT_4, TL, TML, TMR, TR, BL, BML, BMR, BR, ALL
     }
 
     public enum TouchState {
@@ -33,13 +33,14 @@ public class TouchHandler implements TouchEventHandler {
     float xMultiplier = 1f;
     float yMultiplier = 1f;
 
-    private boolean listening = false;
+    private boolean listening = true;
 
     public TouchHandler(Robot robot, ScreenLocation sl) {
         this.robot = robot;
         setScreen(sl);
 
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsEnvironment ge = GraphicsEnvironment
+                .getLocalGraphicsEnvironment();
         GraphicsDevice[] gs = ge.getScreenDevices();
 
         for (int i = 0; i < gs.length; i++) {
@@ -75,7 +76,8 @@ public class TouchHandler implements TouchEventHandler {
                 int y = (int) (((t0.ty + yOffset) * screenHeight) * yMultiplier);
 
                 if (t0.state == 0) {
-                    if (isTouchState(TouchState.NONE) || isTouchState(TouchState.SINGLE)) {
+                    if (isTouchState(TouchState.NONE)
+                            || isTouchState(TouchState.SINGLE)) {
                         setTouchState(TouchState.SINGLE);
 
                         eventStartTime = currentTime;
@@ -114,7 +116,8 @@ public class TouchHandler implements TouchEventHandler {
                 int y = (y0 + y1) / 2;
 
                 if (t0.state == 0 || t1.state == 0) {
-                    if (isTouchState(TouchState.NONE) || isTouchState(TouchState.SINGLE)) {
+                    if (isTouchState(TouchState.NONE)
+                            || isTouchState(TouchState.SINGLE)) {
                         setTouchState(TouchState.DOUBLE);
                         initialResizeDist = VectorFMath.length((v0.sub(v1)));
                         initialX = x;
@@ -122,7 +125,8 @@ public class TouchHandler implements TouchEventHandler {
                     }
                 } else if (t1.state == 1 && t0.state == 1) {
                     if (isTouchState(TouchState.DOUBLE)) {
-                        float amountShorterThanInitial = VectorFMath.length((v0.sub(v1))) - initialResizeDist;
+                        float amountShorterThanInitial = VectorFMath.length((v0
+                                .sub(v1))) - initialResizeDist;
 
                         int notches = (int) (amountShorterThanInitial * 250);
 
@@ -131,7 +135,8 @@ public class TouchHandler implements TouchEventHandler {
                         initialResizeDist = VectorFMath.length((v0.sub(v1)));
                     }
                 } else if (t0.state == 2 || t1.state == 2) {
-                    if (isTouchState(TouchState.DOUBLE) || isTouchState(TouchState.RELEASE)) {
+                    if (isTouchState(TouchState.DOUBLE)
+                            || isTouchState(TouchState.RELEASE)) {
                         if (t0.state == 2 && t1.state == 2) {
                             setTouchState(TouchState.NONE);
                         } else {
@@ -145,7 +150,8 @@ public class TouchHandler implements TouchEventHandler {
                 TouchPoint t2 = newPoints.get(2);
 
                 if (t0.state == 0 || t1.state == 0 || t2.state == 0) {
-                    if (isTouchState(TouchState.NONE) || isTouchState(TouchState.SINGLE)
+                    if (isTouchState(TouchState.NONE)
+                            || isTouchState(TouchState.SINGLE)
                             || isTouchState(TouchState.DOUBLE)) {
                         setTouchState(TouchState.TRIPLE);
                         robot.mousePress(InputEvent.BUTTON3_MASK);
@@ -170,7 +176,12 @@ public class TouchHandler implements TouchEventHandler {
     }
 
     public void setScreen(ScreenLocation sl) {
-        if (sl == ScreenLocation.LEFT_4) {
+        if (sl == ScreenLocation.ALL) {
+            xOffset = 0f;
+            yOffset = 0f;
+            xMultiplier = 1f;
+            yMultiplier = 1f;
+        } else if (sl == ScreenLocation.LEFT_4) {
             xOffset = 0f;
             yOffset = 0f;
             xMultiplier = 2f;
